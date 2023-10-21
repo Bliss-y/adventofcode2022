@@ -1,10 +1,28 @@
 package main
 
+
 import (
 	"fmt"
 	"os"
-	"strconv"
 )
+
+func LineReader(x []byte) func() ([]byte,int){
+    content := x
+    currentIndex := 0;
+    return func()([]byte, int){
+    if(currentIndex >= len(content)){
+        return nil, currentIndex
+    }
+    current_string := make([]byte, 0, 20) 
+    for ;content[currentIndex] != '\r' && currentIndex != len(content); currentIndex++{
+       current_string = append(current_string, content[currentIndex]);
+    }
+    currentIndex+=2
+    return current_string, currentIndex;
+    }
+}
+
+
 
 
 func main() {
@@ -14,42 +32,27 @@ func main() {
         fmt.Println("err reading file");
         return;
     }
-
-    highest := 0;
-    highest_next :=0;
-    highest_last :=0;
-    current_score := 0;
-    s := [10]byte{}
-    current_string := s[:0]
-    for i:=0; i<len(content); i++{
-       if(content[i] == '\r' || i == len(content)){
-          if(len(current_string) == 0) {
-            if(current_score > highest){
-                highest_last = highest_next;
-                highest_next = highest;
-                highest = current_score;
-            } else if(current_score > highest_next){
-                highest_last = highest_next;
-                highest_next = current_score;
-            } else if(current_score > highest_last){
-                highest_last = current_score;
-            }
-            current_score = 0;
+    reader := LineReader(content);
+    wins := []int{2,0,1}
+    opp_score := 0;
+    my_score := 0;
+    for s, i := reader(); i < len(content); s,i = reader() {
+        if(len(s)==3){
+        opp_move := s[0] - 'A'
+        my_move := s[2] - 'X'
+        my_move = byte(wins[(opp_move + my_move)%3])
+        opp_score += int(opp_move) + 1
+        my_score += int(my_move) +1
+          if my_move == opp_move {
+              opp_score += 3;
+              my_score += 3;
+          } else if wins[my_move] == int(opp_move){
+              my_score += 6;
           } else {
-            x,err:= strconv.Atoi(string(current_string))
-            if(err != nil){
-                fmt.Printf("err: %v", err)
-                return
-            }
-            current_score += x;
-            current_string = s[:0]
+              opp_score += 6;
           }
-          i++;
-          continue;
-       }
-       current_string = append(current_string, content[i]);
+        }
     }
-    fmt.Println(highest + highest_next + highest_last);
-
+    fmt.Print("opp, my: ",opp_score, my_score)
 }
 
