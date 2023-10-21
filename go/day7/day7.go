@@ -96,17 +96,15 @@ func main(){
 
         } else {
             if(outputs[0] == "dir"){
-                fmt.Println("continuing because dir")
                 continue
             }
             filesize, _ := strconv.Atoi(outputs[0]);
-            fmt.Println("Adding to directory: ", currentdir.dirname, currentdir.subdirs_size, filesize)
             currentdir.subdirs_size += filesize;
         }
 
     }
-    totaldirsize := 0
-    dirHead.calculatesize();
+    totaldirsize := dirHead.calculatesize();
+    requireddirsize :=30000000 - (70000000 - totaldirsize)
     dirQueue := make([]*dirTree, 100, 100);
     dirQueue[0] = &dirHead
     dirs := 1;
@@ -114,15 +112,13 @@ func main(){
     for dirs>0 {
         dir := dirQueue[current]
         dirsize := dir.calculatesize();
-        if(dirsize < 100000) {
-        totaldirsize+=dirsize;
+        if(dirsize >= requireddirsize && dirsize < totaldirsize) {
+            totaldirsize = dirsize 
         }
-        fmt.Println("len of ",dir.dirname,len(dir.subdirs), dirsize)
         dirs--;
         current--;
         for _, d:= range dir.subdirs {
             current++;
-            fmt.Println("adding to queue:  ",d.dirname, current)
             dirQueue[current] = d;
             dirs++;
         }
