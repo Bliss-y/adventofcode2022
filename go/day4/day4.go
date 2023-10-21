@@ -24,7 +24,7 @@ func LineReader(x []byte) func() ([]byte,int){
 }
 
 func main() {
-    inputfile := "input.txt"
+    inputfile := "test.txt"
     content, err := os.ReadFile(inputfile)
     if err != nil{
         fmt.Println("err reading file");
@@ -43,10 +43,8 @@ func main() {
         fs,_ := strconv.Atoi(first[1])
         sf,_ := strconv.Atoi(second[0])
         ss,_ := strconv.Atoi(second[1])
-        if ff <= sf && fs >= ss{
+        if fs >= sf && ff <= ss || (ss >= ff && sf <= fs){
             num++;
-        } else if sf <= ff && ss >= fs{
-            num ++ 
         }
     }
     fmt.Println(num)
