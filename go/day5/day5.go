@@ -38,6 +38,23 @@ func (s *Stack) Pop() byte{
     return s.s[s.length]
 }
 
+func (s *Stack) Popn(n int) []byte{
+    ret := make([]byte, 0,n);
+    for i:=0; i < n; i++ {
+        if s.length == 0 {return nil}
+        s.length--;
+        ret = append(ret,s.s[s.length])
+        
+    } 
+    return ret
+}
+
+func (s *Stack) Putn(b []byte) {
+    for i:=len(b)-1; i >= 0; i-- {
+        s.Put(b[i]);
+    } 
+}
+
 func (s *Stack) reverse() {
     for i:=0; i < s.length/2; i++ {
         tmp := s.s[s.length- i -1 ];
@@ -95,6 +112,11 @@ func main() {
         for x:=0; x<amount; x++ {
             if(stacks[from-1].length <1){
                 return;
+            }
+            if(amount > 1){
+                val := stacks[from-1].Popn(amount);
+                stacks[to-1].Putn(val)
+                break;
             }
             val := stacks[from-1].Pop();
             stacks[to-1].Put(val)
