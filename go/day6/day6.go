@@ -41,7 +41,7 @@ func main() {
            } 
         }
         uniquecounter += 1;
-        if(uniquecounter == 4){
+        if(uniquecounter == 14){
            marker = i+1; 
         break;
         }
