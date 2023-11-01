@@ -1,22 +1,67 @@
 package main
 
 import (
-    "os"
-    "strings"
-    "fmt"
-    "strconv"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
 )
 
 
 func main() {
-    content,_ :=  os.ReadFile("input.txt");
+    content,_ :=  os.ReadFile("test.txt");
     grid := strings.Split(string(content), "\r\n")
-    sum := 0
-    index := 0
-    for i:=0; i< len(grid)-1; i+=3{
-        index++
-        list1:= grid[i]
-        list2:= grid[i+1]
+    grid = append(grid, "[[2]]")
+    grid = append(grid, "[[6]]")
+    for i:= 0; i<len(grid); i++ {
+        for j := 0; j < len(grid)-1; j++ {
+            if comp(grid[j], grid[j+1]) {
+            } else{
+                tmp := grid[j] 
+                grid[j] = grid[j+1]; 
+                grid[j+1] = tmp
+            }
+        } 
+    }
+    m:=1;
+    for i:= 0; i < len(grid); i++ {
+        if m == 1 && grid[i] == "[[2]]" {
+            m*=i+1
+        }else if m >1 && grid[i] == "[[6]]"{
+            m*=i+1
+            break
+        }
+    }
+    fmt.Println(m)
+
+}
+func getNumber(s *string, index int) (int, int){
+    str := make([]byte, 0,len(*s) - index)
+    ss := *s
+    for x := index; x < len(ss); x++{
+        if ss[x] == ',' || ss[x] == ']' || ss[x] == '['{
+            break
+        }
+        str = append(str, ss[x]);
+    }
+    v,err := strconv.Atoi(string(str))
+    if (err != nil){
+        fmt.Printf("got: %v %v\n", string(ss[index:]), string(str))
+        panic("NaN")
+    }
+    return v, len(str)
+
+}
+
+func comp(list1 string, list2 string)bool {
+        if len(list1) == 0 {
+            return false;
+        }
+        if len(list2) == 0 {
+            return true;
+    }
+        //fmt.Println(list1)
+        //fmt.Println(list2)
         add := true
         lists := 0
         y := 0
@@ -64,18 +109,18 @@ func main() {
                     left, xI := getNumber(&list1, x+1)
                     //fmt.Println(left, right)
                     if right > left {
-                        fmt.Println("right greater than left")
+                        //fmt.Println("right greater than left")
                         add = true;
                         break
                     } else if left > right {
-                        fmt.Println("left greater than left")
+                        //fmt.Println("left greater than left")
                         add = false
                         break
                     } else {
                         x += xI+1
                         y += yI
                         if list1[x] != ']' {
-                            fmt.Println("longer list in left")
+                            //fmt.Println("longer list in left")
                             add = false 
                             break
                         }
@@ -87,12 +132,12 @@ func main() {
                 y++;
                 continue
             } else if list2[y] == '[' {
-                fmt.Println("starting list in y")
+                //fmt.Println("starting list in y")
                 for list2[y+1] == '['{
                     y++;
                 }
                 if list2[y+1] == ']' {
-                    fmt.Println("list ended first in y comparing empty string")
+                    //fmt.Println("list ended first in y comparing empty string")
                     add = false 
                     break
                 }
@@ -105,15 +150,15 @@ func main() {
                 [[[]]] [1] => 
                **/
                 if left > right {
-                    fmt.Println("left > right")
+                    //fmt.Println("left > right")
                     add = false
                     break
                 } else if left < right{
-                    fmt.Println("left < right")
+                    //fmt.Println("left < right")
                     add= true;
                     break
-                }else if list1[y+yI+1] != ']' {
-                    fmt.Println("equals but list y continues")
+                }else if list2[y+yI+1] != ']' {
+                    //fmt.Println("equals but list y continues")
                     add = true
                     break
                 } else {
@@ -145,28 +190,6 @@ func main() {
             //fmt.Println("going to", x, y)
 
         }
-        if add {
-            sum += index
-        }
-        fmt.Println()
-    }
-    fmt.Println(sum)
+        return add;
 }
 
-func getNumber(s *string, index int) (int, int){
-    str := make([]byte, 0,len(*s) - index)
-    ss := *s
-    for x := index; x < len(ss); x++{
-        if ss[x] == ',' || ss[x] == ']' || ss[x] == '['{
-            break
-        }
-        str = append(str, ss[x]);
-    }
-    v,err := strconv.Atoi(string(str))
-    if (err != nil){
-        fmt.Printf("got: %v %v\n", string(ss[index:]), string(str))
-        panic("NaN")
-    }
-    return v, len(str)
-
-}
